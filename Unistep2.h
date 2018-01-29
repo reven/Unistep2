@@ -19,7 +19,7 @@ class Unistep2
     // Constructor. We define pins for In1, In2, In3 and In4 on a ULN2003AN driver
     // plus the number of steps per rev (which is usually 4096) and the delay
     // between steps (900 works well).
-    Unistep2(int _p1, int _p2, int _p3, int _p4, int _steps, int _stepdelay);
+    Unistep2(int _p1, int _p2, int _p3, int _p4, int _steps, unsigned long _stepdelay);
 
     // Poll the motor and step it if a step is due, must call this as
     // frequently as possible, but at least once per minimum step interval,
@@ -45,7 +45,7 @@ class Unistep2
     int stepsToGo();
 
     // Sets a new target position that causes the stepper to stop as quickly as
-    // possible.
+    // possible and pulls pins low.
     void stop();
 
   private:
@@ -54,14 +54,14 @@ class Unistep2
     int p2; //output pin
     int p3; //output pin
     int p4; //output pin
-    int steptime; //the delay time between steps
     int stepsperrev; //the number of steps in one ref zero indexed.
     int currentstep; //the current step number, zero indexed.
     int stepstogo;   //the remaining steps to complete the curret movement.
-    int nextstep;    //the remaining steps to complete the curret movement.
+    unsigned long steptime; //the delay time between steps
+    unsigned long _lastStepTime; //the last step time in microseconds
     void nextStep();   //Called if there are stepstogo (!= 0)
-    void step1();
-    void step0();
+    void stepCW();
+    void stepCCW();
     void goto1();
     void goto2();
     void goto3();
@@ -70,6 +70,7 @@ class Unistep2
     void goto6();
     void goto7();
     void goto0();
+    void powerUp(); //powers pins at current step to get ready for move
 };
 
 #endif
