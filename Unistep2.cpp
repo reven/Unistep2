@@ -5,7 +5,7 @@
   Released into the public domain.
 
   This library tracks the phase and step of unipolar 5 wire stepper motors
-  in a non blocking way.
+  (28BYJ-48) in a non blocking way.
 */
 
 #include "Arduino.h"
@@ -27,16 +27,43 @@ Unistep2::Unistep2(int _p1,int _p2, int _p3, int _p4, int _steps, int _stepdelay
   steptime = _stepdelay;
   stepsperrev = _steps;
   currentstep = 0;
+  stepstogo = 0;
 }
 
-void Unistep2::moves(int steps, int dir)
+// run() should be computationally cheap if false. Just check if we have to move
+// (maybe checking objective vs current step? Or with a flag?) and send to the
+// function. Or else return quickly so that we don't stall the loop.
+boolean Unistep2::run()
+{
+  if (!stepstogo) // will be true if zero (!false = true)
+  {//we're done
+    return true;
+  } else {
+    action();
+  }
+}
+
+// Called because we still have to move a stepper. Do a time check and determine
+// the sequence of phases that we need.
+void Unistep2::action()
+{
+
+}
+
+// Setup a movement. Calculate and set stepstogo according to
+void Unistep2::move(int steps, int dir)
+
+// All has been set up, now we just need to call phase functions.
+void Unistep2::move(int steps, int dir)
 {
   if (dir==1)
   {//forward
     for(int x=0;x<steps;x++)
+    /* This is the loop that we have to circumvent. Just do a time check (see if it's time to move) and the conditional for direction and then call step1() or step0(). Add (or substract) the steps to go to the var (stepsToGo??) and that's it. Next round will continue.
+    */
       {
       step1();
-      delayMicroseconds(steptime);
+      delayMicroseconds(steptime); /// This is what needs to go. Time check instead.
       }
   }
   else
@@ -44,11 +71,12 @@ void Unistep2::moves(int steps, int dir)
     for(int x=0;x<steps;x++)
       {
       step0();
-      delayMicroseconds(steptime);
+      delayMicroseconds(steptime); /// This is what needs to go. Time check instead.
       }
   }
 }
 
+// Inherits phase, calls for clockwise movement phase sequence
 void Unistep2::step1()
 {
   switch(phase)//gofromthisphase
@@ -88,6 +116,7 @@ void Unistep2::step1()
     {currentstep = currentstep+1;}
 }
 
+// Inherits phase, calls for counter-clockwise movement phase sequence
 void Unistep2::step0()
 {
   switch(phase)//gofromthisphase
@@ -195,7 +224,12 @@ void Unistep2::goto0()
      phase=0;
 }
 
-int Unistep2::print()
+int Unistep2::currentPosition()
 {
     return currentstep;
+}
+
+int Unistep2::stepsToGo()
+{
+    return stepstogo;
 }

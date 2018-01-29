@@ -21,6 +21,12 @@ class Unistep2
     // between steps (900 works well).
     Unistep2(int _p1, int _p2, int _p3, int _p4, int _steps, int _stepdelay);
 
+    // Poll the motor and step it if a step is due, must call this as
+    // frequently as possible, but at least once per minimum step interval,
+    // preferably in your main loop.
+    // return true if the motor is at the target position.
+    boolean run();
+
     // Move function. We define the number of steps (unsigned int) and the
     // direction (1 is clockwise, 0 is counterclockwise).
     void move(int steps, int dir);
@@ -41,12 +47,6 @@ class Unistep2
     // possible.
     void stop();
 
-    // Poll the motor and step it if a step is due, must call this as
-    // frequently as possible, but at least once per minimum step interval,
-    // preferably in your main loop.
-    // return true if the motor is at the target position.
-    boolean run();
-
   private:
     int phase; //the curret phase setp
     int p1; //output pin
@@ -56,6 +56,8 @@ class Unistep2
     int steptime; //the delay time between steps
     int stepsperrev; //the number of steps in one ref zero indexed.
     int currentstep; //the current step number, zero indexed.
+    int stepstogo;   //the remaining steps to complete the curret movement.
+    void action(); 
     void step1();
     void step0();
     void goto1();
@@ -66,7 +68,6 @@ class Unistep2
     void goto6();
     void goto7();
     void goto0();
-    //void gotophase(int p);
 };
 
 #endif
