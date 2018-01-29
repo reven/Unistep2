@@ -39,41 +39,38 @@ boolean Unistep2::run()
   {//we're done
     return true;
   } else {
-    action();
+    nextStep();
   }
 }
 
-// Called because we still have to move a stepper. Do a time check and determine
-// the sequence of phases that we need.
-void Unistep2::action()
+// Called because we still have to move a stepper. Do a time check to see if
+// the next step is due and determine the sequence of phases that we need.
+void Unistep2::nextStep()
 {
+  //Do time check first
+/* Use micros() to get time and compre to laststeptime. We check that against
+steptime and decide if we need another step yet.
+*/
 
-}
-
-// Setup a movement. Calculate and set stepstogo according to
-void Unistep2::move(int steps, int dir)
-
-// All has been set up, now we just need to call phase functions.
-void Unistep2::move(int steps, int dir)
-{
-  if (dir==1)
-  {//forward
-    for(int x=0;x<steps;x++)
-    /* This is the loop that we have to circumvent. Just do a time check (see if it's time to move) and the conditional for direction and then call step1() or step0(). Add (or substract) the steps to go to the var (stepsToGo??) and that's it. Next round will continue.
-    */
-      {
-      step1();
-      delayMicroseconds(steptime); /// This is what needs to go. Time check instead.
-      }
+  if (stepstogo > 0)
+  {//clockwise
+    step1();
   }
   else
-  {//reverse or default.
-    for(int x=0;x<steps;x++)
-      {
-      step0();
-      delayMicroseconds(steptime); /// This is what needs to go. Time check instead.
-      }
+  {//counter-clockwise
+    step0();
   }
+}
+
+// Setup a movement. Set stepstogo.
+void Unistep2::move(int steps){
+  stepstogo = steps;
+}
+
+// Setup a movement to position. Calculate and set stepstogo. There may be a
+// more elegant way to calculate the shortest route.
+void Unistep2::moveTo(unsigned int pos){
+  stepstogo = abs(pos - currentstep) < abs(pos - (currentstep + stepsperrev)) ? pos - currentstep : pos - (currentstep + stepsperrev);
 }
 
 // Inherits phase, calls for clockwise movement phase sequence
@@ -169,67 +166,72 @@ void Unistep2::goto1()
 }
 void Unistep2::goto2()
 {
-     digitalWrite(p1, LOW);
-     digitalWrite(p2, LOW);
-     digitalWrite(p3, HIGH);
-     digitalWrite(p4, HIGH);
-     phase=2;
+  digitalWrite(p1, LOW);
+  digitalWrite(p2, LOW);
+  digitalWrite(p3, HIGH);
+  digitalWrite(p4, HIGH);
+  phase=2;
 }
 void Unistep2::goto3()
 {
-     digitalWrite(p1, LOW);
-     digitalWrite(p2, LOW);
-     digitalWrite(p3, HIGH);
-     digitalWrite(p4, LOW);
-     phase=3;
+  digitalWrite(p1, LOW);
+  digitalWrite(p2, LOW);
+  digitalWrite(p3, HIGH);
+  digitalWrite(p4, LOW);
+  phase=3;
 }
 void Unistep2::goto4()
 {
-     digitalWrite(p1, LOW);
-     digitalWrite(p2, HIGH);
-     digitalWrite(p3, HIGH);
-     digitalWrite(p4, LOW);
-     phase=4;
+  digitalWrite(p1, LOW);
+  digitalWrite(p2, HIGH);
+  digitalWrite(p3, HIGH);
+  digitalWrite(p4, LOW);
+  phase=4;
 }
 void Unistep2::goto5()
 {
-     digitalWrite(p1, LOW);
-     digitalWrite(p2, HIGH);
-     digitalWrite(p3, LOW);
-     digitalWrite(p4, LOW);
-     phase=5;
+  digitalWrite(p1, LOW);
+  digitalWrite(p2, HIGH);
+  digitalWrite(p3, LOW);
+  digitalWrite(p4, LOW);
+  phase=5;
 }
 void Unistep2::goto6()
 {
-     digitalWrite(p1, HIGH);
-     digitalWrite(p2, HIGH);
-     digitalWrite(p3, LOW);
-     digitalWrite(p4, LOW);
-     phase=6;
+  digitalWrite(p1, HIGH);
+  digitalWrite(p2, HIGH);
+  digitalWrite(p3, LOW);
+  digitalWrite(p4, LOW);
+  phase=6;
 }
 void Unistep2::goto7()
 {
-     digitalWrite(p1, HIGH);
-     digitalWrite(p2, LOW);
-     digitalWrite(p3, LOW);
-     digitalWrite(p4, LOW);
-     phase=7;
+  digitalWrite(p1, HIGH);
+  digitalWrite(p2, LOW);
+  digitalWrite(p3, LOW);
+  digitalWrite(p4, LOW);
+  phase=7;
 }
 void Unistep2::goto0()
 {
-     digitalWrite(p1, HIGH);
-     digitalWrite(p2, LOW);
-     digitalWrite(p3, LOW);
-     digitalWrite(p4, HIGH);
-     phase=0;
+  digitalWrite(p1, HIGH);
+  digitalWrite(p2, LOW);
+  digitalWrite(p3, LOW);
+  digitalWrite(p4, HIGH);
+  phase=0;
 }
 
 int Unistep2::currentPosition()
 {
-    return currentstep;
+  return currentstep;
 }
 
 int Unistep2::stepsToGo()
 {
-    return stepstogo;
+  return stepstogo;
+}
+
+void Unistep2::stop()
+{
+  stepstogo = 0; // Will this be enough to stop??
 }

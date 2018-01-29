@@ -24,17 +24,18 @@ class Unistep2
     // Poll the motor and step it if a step is due, must call this as
     // frequently as possible, but at least once per minimum step interval,
     // preferably in your main loop.
-    // return true if the motor is at the target position.
+    // return true if the motor is at the target position. (if not does it return false???????)
     boolean run();
 
-    // Move function. We define the number of steps (unsigned int) and the
-    // direction (1 is clockwise, 0 is counterclockwise).
-    void move(int steps, int dir);
+    // Move function. We define the number of steps (int) and set stepstogo
+    // accordingly. Direction is implicit in the sign (>0 is clockwise, <0 is
+    // counterclockwise).
+    void move(int steps);
 
-    // Move-to function. We define the position (between 0 and _steps) and the
-    // direction (1 is clockwise, 0 is counterclockwise). If direction is
-    // undefined we take the shortest path.
-    void moveTo(int pos, int dir);
+    // Move-to function. We define the absolute position (between 0 and _steps)
+    // and set stepstogo to get there. Will choose shortest path, so direction
+    // will depend on current position.
+    void moveTo(unsigned int pos);
 
     // Return the current step of the motor.
     int currentPosition();
@@ -57,7 +58,8 @@ class Unistep2
     int stepsperrev; //the number of steps in one ref zero indexed.
     int currentstep; //the current step number, zero indexed.
     int stepstogo;   //the remaining steps to complete the curret movement.
-    void action(); 
+    int nextstep;    //the remaining steps to complete the curret movement.
+    void nextStep();   //Called if there are stepstogo (!= 0)
     void step1();
     void step0();
     void goto1();
