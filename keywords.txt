@@ -6,18 +6,18 @@
 # Class
 #######################################
 
-Unistep2                   	KEYWORD1
+Unistep2	KEYWORD1
 
 #######################################
 # Methods and Functions
 #######################################
 
-run	                        KEYWORD2
-move                        KEYWORD2
-moveTo                      KEYWORD2
-currentPosition             KEYWORD2
-stepsToGo                   KEYWORD2
-stop                        KEYWORD2
+run	KEYWORD2
+move	KEYWORD2
+moveTo	KEYWORD2
+currentPosition	KEYWORD2
+stepsToGo	KEYWORD2
+stop	KEYWORD2
 
 #######################################
 # Constants
