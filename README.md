@@ -18,7 +18,7 @@ So I decided to create a non-blocking version based on Unistep and added some ex
 - Precise timing avoids noise, heat, stutter, stalling, etc.
 
 ## Installation
-Install manually into your Arduino library folder or download as a zip and import with the library manager.
+Download the zip in *Releases* and use the library manager to add it to your libraries. Alternatively you can install manually into your Arduino library folder.
 
 ## Use
 Just call `#include <Unistep2.h>` at the begining of your sketch and construct the stepper objects with the following call in your setup() function:
@@ -41,9 +41,9 @@ Then you must call `stepper.run()` in your loop. Delaying functions will interfe
 - `stop()`: Stops the current movement and powers down the pins to save energy and avoid heat generation. Is called automatically after each movement, but is available to be called by the user.
 
 ## To-do
-- Create examples
-- Add metadata and library info
-- Repackage as plugin zip
+- ~~Create examples~~
+- ~~Add metadata and library info~~
+- ~~Repackage as plugin zip~~
 
 ## Tip jar
 If you find this useful in any way, feel free to leave a tip in my bitcoin address if you feel so inclined:
