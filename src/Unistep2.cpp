@@ -11,16 +11,14 @@
 #include "Arduino.h"
 #include "Unistep2.h"
 
-//lets define the setup function
-//Unistep2(p1,p2,p3,p4,steps per rev, step delay)
-// Note: _stepdelay has to be an unsigned long to be able to avoid overflow of
-// the timers thanks to register arithmetic
+// Unistep2(p1,p2,p3,p4,steps per rev, step delay)
+// Note: _stepdelay has to be an unsigned long to be able to avoid overflow.
 Unistep2::Unistep2(int _p1,int _p2, int _p3, int _p4, int _steps, unsigned long _stepdelay)
 {
-  p1=_p1;
-  p2=_p2;
-  p3=_p3;
-  p4=_p4;
+  p1 = _p1;
+  p2 = _p2;
+  p3 = _p3;
+  p4 = _p4;
   pinMode(p1, OUTPUT);
   pinMode(p2, OUTPUT);
   pinMode(p3, OUTPUT);
@@ -37,12 +35,13 @@ Unistep2::Unistep2(int _p1,int _p2, int _p3, int _p4, int _steps, unsigned long 
 // function. Or else return quickly so that we don't stall the loop.
 boolean Unistep2::run()
 {
-  if (!stepstogo) // will be true if zero (!false = true)
-  {//we're done
-    return true;
-  } else {
+  if (stepstogo)
+  {
     nextStep();
+    return false;
   }
+
+  return true;
 }
 
 // Called because we still have to move a stepper. Do a time check to see if
@@ -51,32 +50,40 @@ void Unistep2::nextStep()
 {
   // Do time check first
   unsigned long time = micros();
-  if (time - _lastStepTime >= steptime)  //this should work (not overflow), but test.
+  if (time - _lastStepTime < steptime)
   {
-    if (stepstogo > 0)
-    {//clockwise
-      stepCW();
-      stepstogo--;
-      if (stepstogo == 0) stop(); // set pins low. Less humm and less energy.
-    }
-    else
-    {//counter-clockwise
-      stepCCW();
-      stepstogo++;
-      if (stepstogo == 0) stop(); // set pins low. Less humm and less energy.
-    }
-    _lastStepTime = time;
+    return;
   }
+
+  if (stepstogo > 0) //clockwise
+  {
+    stepCW();
+    stepstogo--;
+    if (stepstogo == 0) { // set pins low. Less humm and less energy.
+      stop();
+    }
+  }
+  else //counter-clockwise
+  {
+    stepCCW();
+    stepstogo++;
+    if (stepstogo == 0) { // set pins low. Less humm and less energy.
+      stop();
+    }
+  }
+  
+  _lastStepTime = time;
 }
 
 // Setup a movement. Set stepstogo.
-void Unistep2::move(int steps){
+void Unistep2::move(int steps)
+{
   powerUp();
   stepstogo = steps;
 }
 
-// Setup a movement to position. Calculate and set stepstogo. There may be a
-// more elegant way to calculate the shortest route.
+// Setup a movement to position. Calculate and set stepstogo.
+// TODO: There may be a more elegant way to calculate the shortest route.
 void Unistep2::moveTo(unsigned int pos){
   powerUp();
   stepstogo = pos - currentstep;
@@ -91,37 +98,39 @@ void Unistep2::stepCW()
 {
   switch(phase)//gofromthisphase
   {
-   case 0:
-     goto7();
-   break;
-   case 1:
-     goto0();
-   break;
-   case 2:
-     goto1();
-   break;
-   case 3:
-     goto2();
-   break;
-   case 4:
-     goto3();
-   break;
-   case 5:
-     goto4();
-   break;
+    case 0:
+      goto7();
+      break;
+    case 1:
+      goto0();
+      break;
+    case 2:
+      goto1();
+      break;
+    case 3:
+      goto2();
+      break;
+    case 4:
+      goto3();
+      break;
+    case 5:
+      goto4();
+      break;
      case 6:
-     goto5();
-   break;
-   case 7:
-     goto6();
-   break;
-   default:
-     goto0();
-   break;
+      goto5();
+      break;
+    case 7:
+      goto6();
+      break;
+    default: // TODO: This should trigger some horrendous error
+      goto0();
+      break;
   }
 
   currentstep++;
-  if (currentstep == stepsperrev) currentstep = 0;
+  if (currentstep == stepsperrev) {
+    currentstep = 0;
+  }
 
 }
 
@@ -130,38 +139,39 @@ void Unistep2::stepCCW()
 {
   switch(phase)//gofromthisphase
   {
-   case 0:
-     goto1();
-   break;
-   case 1:
-     goto2();
-   break;
-   case 2:
-     goto3();
-   break;
-   case 3:
-     goto4();
-   break;
-   case 4:
-     goto5();
-   break;
-   case 5:
-     goto6();
-   break;
+    case 0:
+      goto1();
+      break;
+    case 1:
+      goto2();
+      break;
+    case 2:
+      goto3();
+      break;
+    case 3:
+      goto4();
+      break;
+    case 4:
+      goto5();
+      break;
+    case 5:
+      goto6();
+      break;
      case 6:
-     goto7();
-   break;
-   case 7:
-     goto0();
-   break;
-   default:
-     goto0();
-   break;
+      goto7();
+      break;
+    case 7:
+      goto0();
+      break;
+    default: // TODO: This should trigger some horrendous error
+      goto0();
+      break;
   }
 
   currentstep--;
-  if (currentstep < 0) currentstep = stepsperrev - 1;
-
+  if (currentstep < 0) {
+    currentstep = stepsperrev - 1;
+  }
 }
 
 //individual steps
@@ -173,6 +183,7 @@ void Unistep2::goto1()
   digitalWrite(p4, HIGH);
   phase=1;
 }
+
 void Unistep2::goto2()
 {
   digitalWrite(p1, LOW);
@@ -181,6 +192,7 @@ void Unistep2::goto2()
   digitalWrite(p4, HIGH);
   phase=2;
 }
+
 void Unistep2::goto3()
 {
   digitalWrite(p1, LOW);
@@ -189,6 +201,7 @@ void Unistep2::goto3()
   digitalWrite(p4, LOW);
   phase=3;
 }
+
 void Unistep2::goto4()
 {
   digitalWrite(p1, LOW);
@@ -197,6 +210,7 @@ void Unistep2::goto4()
   digitalWrite(p4, LOW);
   phase=4;
 }
+
 void Unistep2::goto5()
 {
   digitalWrite(p1, LOW);
@@ -205,6 +219,7 @@ void Unistep2::goto5()
   digitalWrite(p4, LOW);
   phase=5;
 }
+
 void Unistep2::goto6()
 {
   digitalWrite(p1, HIGH);
@@ -213,6 +228,7 @@ void Unistep2::goto6()
   digitalWrite(p4, LOW);
   phase=6;
 }
+
 void Unistep2::goto7()
 {
   digitalWrite(p1, HIGH);
@@ -221,6 +237,7 @@ void Unistep2::goto7()
   digitalWrite(p4, LOW);
   phase=7;
 }
+
 void Unistep2::goto0()
 {
   digitalWrite(p1, HIGH);
@@ -259,32 +276,32 @@ void Unistep2::powerUp()
 {
   switch(phase)//gofromthisphase
   {
-   case 0:
-     goto0();
-   break;
-   case 1:
-     goto1();
-   break;
-   case 2:
-     goto2();
-   break;
-   case 3:
-     goto3();
-   break;
-   case 4:
-     goto4();
-   break;
-   case 5:
-     goto5();
-   break;
-     case 6:
-     goto6();
-   break;
-   case 7:
-     goto7();
-   break;
-   default:
-     goto0();
-   break;
+    case 0:
+      goto0();
+      break;
+    case 1:
+      goto1();
+      break;
+    case 2:
+      goto2();
+      break;
+    case 3:
+      goto3();
+      break;
+    case 4:
+      goto4();
+      break;
+    case 5:
+      goto5();
+      break;
+    case 6:
+      goto6();
+      break;
+    case 7:
+      goto7();
+      break;
+    default: // TODO: This should trigger some horrendous error
+      goto0();
+      break;
   }
 }
