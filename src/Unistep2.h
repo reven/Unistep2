@@ -27,22 +27,22 @@ class Unistep2
     // return true if the motor is at the target position. (if not does it return false???????)
     boolean run();
 
-    // Move function. We define the number of steps (int) and set stepstogo
+    // Move function. We define the number of steps (long) and set stepstogo
     // accordingly. Direction is implicit in the sign (>0 is clockwise, <0 is
     // counterclockwise).
-    void move(int steps);
+    void move(long steps);
 
     // Move-to function. We define the absolute position (between 0 and _steps)
     // and set stepstogo to get there. Will choose shortest path, so direction
     // will depend on current position.
-    void moveTo(unsigned int pos);
+    void moveTo(unsigned long pos);
 
     // Return the current step of the motor.
-    int currentPosition();
+    long currentPosition();
 
     // Return the number of steps between the current position to the target
     // position. Positive is clockwise. If 0 the motor is not moving.
-    int stepsToGo();
+    long stepsToGo();
 
     // Sets a new target position that causes the stepper to stop as quickly as
     // possible and pulls pins low.
@@ -55,8 +55,8 @@ class Unistep2
     int p3; //output pin
     int p4; //output pin
     int stepsperrev; //the number of steps in one ref zero indexed.
-    int currentstep; //the current step number, zero indexed.
-    int stepstogo;   //the remaining steps to complete the curret movement.
+    long currentstep; //the current step number, zero indexed.
+    long stepstogo;   //the remaining steps to complete the curret movement.
     unsigned long steptime; //the delay time between steps
     unsigned long _lastStepTime; //the last step time in microseconds
     void nextStep();   //Called if there are stepstogo (!= 0)

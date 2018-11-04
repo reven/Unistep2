@@ -76,7 +76,7 @@ void Unistep2::nextStep()
 }
 
 // Setup a movement. Set stepstogo.
-void Unistep2::move(int steps)
+void Unistep2::move(long steps){
 {
   powerUp();
   stepstogo = steps;
@@ -84,7 +84,7 @@ void Unistep2::move(int steps)
 
 // Setup a movement to position. Calculate and set stepstogo.
 // TODO: There may be a more elegant way to calculate the shortest route.
-void Unistep2::moveTo(unsigned int pos){
+void Unistep2::moveTo(unsigned long pos){
   powerUp();
   stepstogo = pos - currentstep;
   if (abs(stepstogo) > stepsperrev / 2)
@@ -248,13 +248,13 @@ void Unistep2::goto0()
 }
 
 // Returns current step
-int Unistep2::currentPosition()
+long Unistep2::currentPosition()
 {
   return currentstep;
 }
 
 // Returns steps to go
-int Unistep2::stepsToGo()
+long Unistep2::stepsToGo()
 {
   return stepstogo;
 }
