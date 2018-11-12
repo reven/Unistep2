@@ -77,7 +77,6 @@ void Unistep2::nextStep()
 
 // Setup a movement. Set stepstogo.
 void Unistep2::move(long steps){
-{
   powerUp();
   stepstogo = steps;
 }
