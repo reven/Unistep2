@@ -93,6 +93,11 @@ void Unistep2::moveTo(unsigned long pos){
   }
 }
 
+// Change the step delay for a stepper that had already been initialized.
+void Unistep2::setDelay(unsigned long newDelay) {
+	steptime = newDelay;
+}
+
 // Inherits phase, calls for clockwise movement phase sequence
 void Unistep2::stepCW()
 {

@@ -47,6 +47,9 @@ class Unistep2
     // Sets a new target position that causes the stepper to stop as quickly as
     // possible and pulls pins low.
     void stop();
+	
+	// Change the step delay for a stepper that had already been initialized.
+	void setDelay(unsigned long newDelay);
 
   private:
     int phase; //the curret phase setp
