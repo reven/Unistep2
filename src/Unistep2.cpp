@@ -131,6 +131,7 @@ void Unistep2::stepCW()
       break;
   }
 
+  currentpos++;
   currentstep++;
   if (currentstep == stepsperrev) {
     currentstep = 0;
@@ -172,6 +173,7 @@ void Unistep2::stepCCW()
       break;
   }
 
+  currentpos--;
   currentstep--;
   if (currentstep < 0) {
     currentstep = stepsperrev - 1;
@@ -254,7 +256,7 @@ void Unistep2::goto0()
 // Returns current step
 long Unistep2::currentPosition()
 {
-  return currentstep;
+  return currentpos;
 }
 
 // Returns steps to go

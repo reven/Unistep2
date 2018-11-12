@@ -58,6 +58,7 @@ class Unistep2
     int p3; //output pin
     int p4; //output pin
     int stepsperrev; //the number of steps in one ref zero indexed.
+    long currentpos; //the current position, irrespective of motor specifics.
     long currentstep; //the current step number, zero indexed.
     long stepstogo;   //the remaining steps to complete the curret movement.
     unsigned long steptime; //the delay time between steps
